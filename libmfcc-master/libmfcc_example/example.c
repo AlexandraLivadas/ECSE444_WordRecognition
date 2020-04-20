@@ -10,6 +10,7 @@
 
 int main(void)
 {
+	printf("HERE");
 	// Read in sample data from sample.dat
 	// sample.dat contains an 8192-point spectrum from a sine wave at 440Hz (A) in double precision
 	// Spectrum was computed using FFTW (http://www.fftw.org/)
@@ -44,13 +45,17 @@ int main(void)
 
 	// Close the sample file
 	fclose(sampleFile);
-
+	printf("HERE");
+	FILE *f;
+	fopen("data.csv", "wb");
 	// Compute the first 13 coefficients
 	for(coeff = 0; coeff < 13; coeff++)
 	{
 		mfcc_result = GetCoefficient(spectrum, 44100, 48, 128, coeff);
 		printf("%i %f\n", coeff, mfcc_result);
+		fprintf(f, "%i: %f\n", coeff, mfcc_result);
 	}
+	fclose(f);
 	getchar();
 	
 	return 0;

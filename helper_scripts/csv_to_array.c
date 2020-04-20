@@ -3,20 +3,39 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fftw3.h>
+#include <math.h>
 
-fftw_complex *out;
+//#include <libmfcc.h>
+#define N 6000
+
+#include "libmfcc.h"
+
+//fftw_complex *out;
+double *out;
 fftw_plan p;
 
 
-fftw_complex *computeFFT(double* input, int n){
+double *computeFFT(double* input){
+    FILE *f_fft;
+    f_fft = fopen("../data/FFT/one_Alex1_fft", "wb"); 
+    int n = N+1;
+    //out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * (n/2+1));
+    out = (double*) malloc(sizeof(double)*n);
+    //in = (double*)input;
+    //p = fftw_plan_dft_r2c_1d(n, input, out, FFTW_ESTIMATE);
+    //This is a real-to-real FFT with a half-complex format???
+    p = fftw_plan_r2r_1d(n, input, out, FFTW_R2HC, FFTW_ESTIMATE);
+    for (int i = 0; i < N; i++) 
+        input[i] = input[i]/512; //idk
 
-out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * (n/2+1));
+    fftw_execute(p); /* repeat as needed */
 
-//in = (double*)input;
-p = fftw_plan_dft_r2c_1d(n, input, out, FFTW_ESTIMATE);
-fftw_execute(p); /* repeat as needed */
+    for (int i = 0; i < n; i++){
+        fprintf(f_fft, "%lf, ", out[i]);
+        printf("%lf, ", out[i]);
+    }
 
-return out;
+    return out;
 }
 
 void freeFFT(fftw_complex *out) {
@@ -25,9 +44,8 @@ void freeFFT(fftw_complex *out) {
 
 double *csv_to_arr(char *filename){
     FILE *fp;
-    double a[6000];
+    double *a = (double*) malloc(sizeof(double)*N);
     size_t count = 0;
-    memset(&a, 0, sizeof(a)); 
 
     fp = fopen(filename, "rb");
     if (fp == NULL) {
@@ -46,20 +64,36 @@ double *csv_to_arr(char *filename){
     return a;
 }
 
-int main(void) {
-    
-    double *a = csv_to_arr("../data/one_Alex1.csv");
+double *computeMFCC(double *in, int n){
+    FILE *f;
+    f = fopen("../data/MFCC/one_Alex1_mfcc", "wb");
+    double *mfcc_result = (double *) malloc(sizeof(double)*n);
 
-    fftw_complex *out = computeFFT(a, 6000);
-
-    int i;
-    for (i = 0; i < 6000 / 2 + 1; i++) {
-    printf("out[%d] = {%f, %fi}, ", i, creal(out[i]), cimag(out[i]));
+    if (f == NULL){
+        printf("Error: file does not exist");
+        exit(1);
     }
+    //Compute the first n coefficients
+	for(int coeff = 0; coeff < n; coeff++)
+	{
+		mfcc_result[coeff] = GetCoefficient(in, 16000, 48, 182, coeff);
+        fprintf(f, "%i: %f, og: %lf\n", coeff, mfcc_result[coeff], in[coeff]);
+		printf("%i %f, ", coeff, mfcc_result[coeff]);
+	}
+    fclose(f);
+    return mfcc_result;
+}
 
-    freeFFT(out);
+int main(void) {
+    double *a = (double*) malloc(sizeof(double)*N);
+    a = csv_to_arr("../data/original/one_Alex1.csv");
+
+    computeFFT(a);
+
     fftw_destroy_plan(p);
 
+    double *mfcc = (double*) malloc(sizeof(double)*(N+1));
+    mfcc = computeMFCC(out, 4096);
+    
     return 0;
-
 }
