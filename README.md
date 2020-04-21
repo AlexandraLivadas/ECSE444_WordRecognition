@@ -12,6 +12,11 @@ make install
 make install check
 make clean 
 ```
-**Important**
-To compile any .c script that uses the fftw3 library, you should compile like this on the command line:
+**Important**  
+To compile any .c script that uses the fftw3 library, you should compile like this on the command line:  
 ```gcc [filename] -lfftw3 -lm```
+
+**Super Important**  
+To run the file "csv_to_array.c" in the helper scripts folder:
+Go to the helper scripts folder and run:  
+`gcc *.c -lfftw3 -lm`. Then, do `/a.out`
