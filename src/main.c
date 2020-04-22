@@ -7,6 +7,7 @@
 
 #define N 6000
 
+#include "headers/main.h"
 #include "headers/conversions.h"
 
 double **getMFCC(char* origin, char *dest){
