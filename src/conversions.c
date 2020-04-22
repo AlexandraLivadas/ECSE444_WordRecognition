@@ -4,13 +4,15 @@
 #include <string.h>
 #include <fftw3.h>
 #include <math.h>
+
 //#include <libmfcc.h>
 #define N 6000
 
+#include "headers/conversions.h"
 #include "libmfcc.h"
 
 //fftw_complex *out;
-double *out;
+//double *out;
 double *mfcc[500][12];
 double *mfcc_result;
 fftw_plan p;
@@ -20,6 +22,7 @@ double *computeFFT(double* input){
     FILE *f_fft;
     f_fft = fopen("../data/FFT/one_Alex1_fft", "wb"); 
     //out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * (n/2+1));
+    double *out;
     out = (double*) malloc(sizeof(double)*N);
     //in = (double*)input;
     //p = fftw_plan_dft_r2c_1d(n, input, out, FFTW_ESTIMATE);
@@ -34,7 +37,7 @@ double *computeFFT(double* input){
     //     fprintf(f_fft, "%d: %lf\n", i, out[i]);
     //     //printf("%lf, ", out[i]);
     // }
-
+    fftw_destroy_plan(p);
     return out;
 }
 
@@ -65,8 +68,8 @@ double *csv_to_arr(char *filename){
 }
 
 double *computeMFCC(double *in, int n, int frame_n, FILE *f){
-    //double *mfcc_result = (double*) malloc(sizeof(double)*n);
-    mfcc_result = (double*) malloc(sizeof(double)*n);
+    double *mfcc_result = (double*) malloc(sizeof(double)*n);
+    //mfcc_result = (double*) malloc(sizeof(double)*n);
 
     //Compute the first n coefficients
 	for(int coeff = 0; coeff < n; coeff++)
@@ -81,33 +84,3 @@ double *computeMFCC(double *in, int n, int frame_n, FILE *f){
     return mfcc_result;
 }
 
-int main(void) { 
-    double *a = (double*) malloc(sizeof(double)*N);
-    a = csv_to_arr("../data/original/one_Alex1.csv");
-
-    // double *i = (double*) malloc(sizeof(double)*(N+1));
-    // i = computeFFT(a);
-    computeFFT(a);
-
-    fftw_destroy_plan(p);
-
-    FILE *f;
-    f = fopen("../data/MFCC/one_Alex1_mfcc", "wb");
-    //For 6000 inputs, 12 MFCC per frame: 500 frames
-    //double mfcc[500][12];
-    for (int j = 0; j < 4; j++){
-          fprintf(f, "FRAME NUMBER: %d\n", j);
-        double *m = computeMFCC(out, 12, j, f);
-        memcpy(mfcc[j], m, sizeof(int) * 12);
-    }
-
-    fclose(f);
-
-    for (int k = 0; k < 10; k++){
-        for (int m = 0; m < 12; m++){
-            printf("%lf, ", &mfcc[k][m]);
-        }
-    }
-    
-    return 0;
-}
