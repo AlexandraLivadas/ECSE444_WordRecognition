@@ -9,6 +9,27 @@
 #define C 12
 #define F 4
 
+//Get distance for one frame?
+double dist_frame(double* test, double*  train){
+    double dist = 0;
+    for (int i = 0; i < 12; i++){
+        dist = dist + (test[i]-train[i])*(test[i]-train[i]);
+    }
+    return dist;
+}
+
+double getMin(double a, double b, double c){
+    if (a <= b && a <= c){
+        return a;
+    }
+    else if (b <= a && b <= c){
+        return b;
+    }
+    else if (c <= a && c <= b){
+        return c;
+    }
+}
+
 //Gets DTW distance between two MFCC double** arrays?
 double dist(double** test, double** train){
     double **Dist;
@@ -45,19 +66,9 @@ double dist(double** test, double** train){
     //Fill the rest (starting from 1?):
     for (int i = 1; i < F; i++){
         for (int j = 1; j < F; i++){
-            D[i][j] = Dist[i][j] + min(D[i-1][j], D[i-1][j-1], D[i][j-1]);
+            D[i][j] = Dist[i][j] + getMin(D[i-1][j], D[i-1][j-1], D[i][j-1]);
         }
     }
 
     return 0;
-}
-
-
-//Get distance for one frame?
-double dist_frame(double *test, double *train){
-    double dist = 0;
-    for (int i = 0; i < 12; i++){
-        dist = dist + (test[i]-train[i])*(test[i]-train[i]);
-    }
-    return dist;
 }

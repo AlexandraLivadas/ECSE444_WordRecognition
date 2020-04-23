@@ -20,3 +20,6 @@ To compile any .c script that uses the fftw3 library, you should compile like th
 To run the file "csv_to_array.c" in the helper scripts folder:
 Go to the helper scripts folder and run:  
 `gcc *.c -lfftw3 -lm`. Then, do `/a.out`
+
+Example Input File: `../data/original/one_Alex1.csv`   
+Example Output File: `../data/MFCC/one_Alex1_mfcc`
