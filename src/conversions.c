@@ -68,7 +68,8 @@ double *csv_to_arr(char *filename){
 }
 
 double *computeMFCC(double *in, int n, int frame_n, FILE *f){
-    double *mfcc_result = (double*) malloc(sizeof(double)*n);
+    double *mfcc_result;
+    mfcc_result = (double*) malloc(sizeof(double)*n);
     //mfcc_result = (double*) malloc(sizeof(double)*n);
 
     //Compute the first n coefficients
@@ -78,6 +79,7 @@ double *computeMFCC(double *in, int n, int frame_n, FILE *f){
         int i = coeff+(n*frame_n);
 		mfcc_result[coeff] = GetCoefficient(in, 16000, 48, 6000, i); 
         fprintf(f, "%i: %f, og: %lf\n", i, mfcc_result[coeff], in[i]);
+        //printf("HERE\n");
 		//printf("%i %f, ", i, mfcc_result[coeff]);
 	}
 
