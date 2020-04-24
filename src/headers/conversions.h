@@ -14,5 +14,5 @@ double *csv_to_arr(char *filename);
  * frame_n = the current frame number
  * f = file we are writing the results to. 
 */
-double *computeMFCC(double *in, int n, int frame_n, FILE *f);
+double *computeMFCC(double *in, int n, int frame_n);
 
